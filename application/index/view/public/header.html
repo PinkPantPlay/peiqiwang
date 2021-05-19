@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>{$website.title}</title>
+  <link rel="stylesheet" href="__STATIC__/index/node_modules/bootstrap/dist/css/bootstrap.css">
+  <link rel="stylesheet" href="__STATIC__/index/css/styles.css">
+  <script src="__STATIC__/index/node_modules/jquery/dist/jquery.min.js"></script>
+  <script src="__STATIC__/index/node_modules/bootstrap/dist/js/bootstrap.js"></script>
+  <script src="__STATIC__/index/js/index.js"></script>
+  <style>
+    .form-control-plaintext{outline: none;}
+    /*弹出框*/
+    .showMessage {padding: 20px 30px;border-radius: 5px;position: fixed;top: 45%;left: 45%;color: #ffffff;opacity: 0.7;}
+    .showMessageSuccess {background-color: #000000;}
+    .showMessageError {background-color: #ff0000;}
+  </style>
+</head>
+<body>
+<div class="d-flex justify-content-between m-auto s-box">
+  <a href="{:url('index/index')}" id="logo">
+    <div class="logo"></div>
+  </a>
+  <div class="search bg-primary m-auto">
+    <form action="{:url('goods/index')}" method="get">
+      <input type="text" name="keyword" placeholder=" 请输入关键字">
+      <input type="submit" class="s-btn bg-primary m-auto" value="搜索" name="submit" />
+    </form>
+  </div>
+</div>
+<div class="header bg-primary">
+  <nav class="navbar navbar-expand-lg navbar-dark m-auto " style="max-width: 1100px;padding: 0;">
+    <a class="navbar-brand" href="#"> {$website.title}</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation" style="margin: 5px;">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarText">
+      <ul class="navbar-nav mr-auto">
+        {volist name='nav' id="vo"}
+        <li class="nav-item">
+          <a class="nav-link" href="{:url($vo.url)}">{$vo.title} <span class="sr-only">(current)</span></a>
+        </li>
+        {/volist}
+<!--        <li class="nav-item">-->
+<!--          <a class="nav-link" href="{:url('index/index')}">首页 <span class="sr-only">(current)</span></a>-->
+<!--        </li>-->
+<!--        <li class="nav-item">-->
+<!--          <a class="nav-link" href="{:url('goods/index')}">全部商品</a>-->
+<!--        </li>-->
+<!--        <li class="nav-item">-->
+<!--          <a class="nav-link" href="{:url('goods/recommend')}">推荐商品</a>-->
+<!--        </li>-->
+<!--        <li class="nav-item">-->
+<!--          <a class="nav-link" href="{:url('bbs/index')}">在线论坛</a>-->
+<!--        </li>-->
+<!--        <li class="nav-item">-->
+<!--          <a class="nav-link" href="{:url('notice/index')}">系统公告</a>-->
+<!--        </li>-->
+<!--        <li class="nav-item">-->
+<!--          <a class="nav-link" href="{:url('about/index')}">关于我们</a>-->
+<!--        </li>-->
+<!--        <li class="nav-item">-->
+<!--          <a class="nav-link" href="{:url('cart/index')}">购物车</a>-->
+<!--        </li>-->
+      </ul>
+      <span class="navbar-text">
+        <div class="site-topbar">
+          {if condition="$Think.session.userid neq null"}<a class="link" href="{:url('user/index')}">我的信息</a>&nbsp;&nbsp;<a href="#" onclick="logout()">退出登录</a>{else/}<a href="{:url('login/login')}">用户登录</a>&nbsp;&nbsp;<a href="{:url('login/register')}">用户注册</a>{/if}
+        </div>
+        <script>
+          function logout() {
+            var logout = confirm('确定要退出登录吗？');
+            if (true==logout){
+              location.href="{:url('login/login_out')}";
+            }
+          }
+        </script>
+      </span>
+    </div>
+  </nav>
+</div>

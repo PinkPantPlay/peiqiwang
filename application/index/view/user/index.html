@@ -1,0 +1,92 @@
+{include file="public/header"}
+<div class="container">
+    <div class="d-flex">
+        <div class="left">
+            {include file="user/nav"}
+            <div>
+                <h5>个人资料</h5>
+                <div class="d-flex">
+                    <div class="userimg">
+                        <img src="__ROOT__/uploads/{$user.img}" alt="">
+                    </div>
+                    <div class="userinfo">
+                        <h6>{$user.nickname}</h6>
+                        <div class="myinfo">
+                            <div class="form-group">
+                                <label for="username">用户名</label>
+                                <input type="text" class="form-control-plaintext" id="username" readonly value="{$user.username}">
+                            </div>
+                            <div class="form-group">
+                                <label for="nickname">昵称</label>
+                                <input type="text" class="form-control-plaintext" id="nickname" readonly value="{$user.nickname}">
+                            </div>
+                            <div class="form-group">
+                                <label for="sex">性别</label>
+                                <input type="text" class="form-control-plaintext" id="sex" readonly value="{$user.sex}">
+                            </div>
+                            <div class="form-group">
+                                <label for="tel">电话</label>
+                                <input type="text" class="form-control-plaintext" id="tel" readonly value="{$user.tel}">
+                            </div>
+                            <div class="form-group">
+                                <label for="addtime">注册时间</label>
+                                <input type="text" class="form-control-plaintext" id="addtime" readonly value="{$user.addtime}" style="width: 200px;">
+                            </div>
+                        </div>
+                        <table class="table">
+                            <thead class="thead-dark">
+                            <tr>
+                                <th scope="col">收件人姓名</th>
+                                <th scope="col">电话</th>
+                                <th scope="col">地址</th>
+                                <th scope="col">删除</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {volist name='address' id="vo"}
+                            <tr name="a{$vo.id}">
+                                <th>{$vo.nickname}</th>
+                                <td>{$vo.tel}</td>
+                                <td>{$vo.address}</td>
+                                <td><a href="javascript:;" onclick="addrdel('{$vo.id}')">删除</a></td>
+                            </tr>
+                            {/volist}
+                            </tbody>
+                        </table>
+                        <div class="btn-group btn-group-sm" role="group" aria-label="Basic example">
+                            <button type="button" class="btn btn-light" onclick="location.href='{:url(\'user/address\')}'">添加地址信息</button>
+                            <button type="button" class="btn btn-secondary" onclick="location.href='{:url(\'user/edit\')}'">编辑个人信息</button>
+                        </div>
+                    </div>
+                </div>
+        </div>
+    </div>
+        <div>
+            {include file="public/right-side"}
+        </div>
+    </div>
+</div>
+<script>
+    function addrdel(id){
+        var del = confirm('确定要删除本条地址信息吗？');
+        var tr = ".table tr[name='a"+id+"']";
+        if(del == true){
+            $.ajax({
+                url:'{:url(\'user/addrdel\')}',
+                type:'get',
+                data:'id='+id,
+                dataType:'text',
+                success:function(z){
+                    // console.log(z);
+                    if(z=='1'){
+                        showMessage('删除成功',1);
+                        $(tr).remove();
+                    }else{
+                        showMessage('删除失败',0);
+                    }
+                }
+            })
+        }
+    }
+</script>
+{include file="public/footer"}

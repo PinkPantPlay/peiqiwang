@@ -1,0 +1,61 @@
+{include file="public/header"}
+<style>
+  th,td{text-align: center;}
+</style>
+<div class="container">
+  <div>
+    {include file="user/nav"}
+    <div>
+      <h5>我的文章</h5>
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+          <tr>
+            <th scope="col">标题</th>
+            <th scope="col">内容预览</th>
+            <th scope="col">日期</th>
+            <th scope="col">操作</th>
+          </tr>
+          </thead>
+          <tbody>
+          {volist name='myart' id="vo"}
+          <tr name="o{$vo.id}">
+            <td>{$vo.title}</td>
+            <td>{$vo.content|strip_tags|mb_substr=0,20,'utf-8'}</td>
+            <td>{$vo.addtime}</td>
+            <td><a href="{:url('bbs/detail',array('id'=>$vo.id))}">详细</a> <a href="javascript:;" onclick="delart('{$vo.id}')">删除</a></td>
+          </tr>
+          {/volist}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  function delart(id) {
+    var yes = confirm('确定要删除这篇文章吗？');
+    if (true==yes){
+      $.ajax({
+        url:'{:url(\'bbs/delart\')}',
+        type:'GET',
+        data:'id='+id,
+        dataType: 'text',
+        success:function (z) {
+          var obj = JSON.parse(z);
+          if (obj.code == '1'){
+            showMessage(obj.msg,1);
+            setTimeout(function () {
+              window.location.reload();
+            },1000);
+          }else {
+            showMessage(obj.msg,0);
+            return false;
+          }
+        }
+      })
+    }
+    return false;
+  }
+</script>
+{include file="public/footer"}

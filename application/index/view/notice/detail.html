@@ -1,0 +1,16 @@
+{include file="public/header"}
+<div class="container">
+  <div class="box d-flex justify-content-around">
+    <div class="left">
+      <div class="tg">
+        <a href="{:url('index/index')}">首页</a> > <a href="{:url('notice/index')}">系统公告</a> > <a href="#" class="inactive">公告详情</a>
+      </div>
+      <div class="article">
+        <h3 class="text-center">{$notice['title']}</h3>
+        <div class="content-box">{$notice['editorValue']}</div>
+      </div>
+    </div>
+    {include file="public/right-side"}
+  </div>
+</div>
+{include file="public/footer"}

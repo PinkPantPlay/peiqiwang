@@ -1,0 +1,48 @@
+{include file="public/header"}
+<div class="container">
+    <div>
+        <div class="tg">
+            <a href="{:url('index/index')}">首页</a> > <a href="#" class="inactive">商品中心</a>
+        </div>
+        <div class="category border-bottom d-flex">
+            <p>商品分类: </p>
+            <ul class="nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="{:url('goods/index')}">全部商品</a>
+                </li>
+                {if condition="$keyword neq ''"}
+                <li class="nav-item">
+                    <a class="nav-link" href="{:url('goods/index',array('keyword'=>$keyword))}">全部搜索结果</a>
+                </li>
+                {/if}
+                {volist name='category' id="vo"}
+                <li class="nav-item">
+                    <a class="nav-link" href="{:url('goods/index',array('categoryid'=>$vo['id'],'keyword'=>$keyword))}">{$vo.title}</a>
+                </li>
+                {/volist}
+            </ul>
+        </div>
+        <div class="row">
+            {volist name='goods' id="vo"}
+            <div class="col-md-2 col-sm-2 col-4 shadow-lg mb-5 bg-white rounded goods-item" onclick="location.href='{:url(\'goods/goodsdetail\',array(\'id\'=>$vo[\'id\'],\'categoryid\'=>$vo[\'categoryid\'],\'pid\'=>$vo[\'pid\']))}'">
+                <div class="goods-img">
+                    <img src="__ROOT__/uploads/{$vo.img}" alt="">
+                </div>
+                <div style="padding: 10px">
+                    <div style="height: 40px">
+                        <h6 style="font-size: 12px;line-height: 20px;">{$vo.title}</h6>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span style="color: red">￥{$vo.sprice}</span>
+                        <a href="{:url('goods/goodsdetail',array('id'=>$vo['id'],'categoryid'=>$vo['categoryid'],'pid'=>$vo['pid']))}"><div class="detail-btn">查看详情</div></a>
+                    </div>
+                </div>
+            </div>
+            {/volist}
+        </div>
+        <div>
+            {$goods->render()}
+        </div>
+    </div>
+</div>
+{include file="public/footer"}

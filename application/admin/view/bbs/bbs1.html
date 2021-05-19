@@ -1,0 +1,345 @@
+{include file="public/header" /}
+<body>
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <form class="layui-form layui-card-header layuiadmin-card-header-auto" method="get">
+                    <div class="layui-form-item">
+                       <div class="layui-inline">
+                            <div class="layui-input-inline">
+                                <input type="text" name="kewords2" maxlength="25" value="{$Request.get.kewords2}" autocomplete="off" placeholder="输入内容" class="layui-input" >
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+    
+                            <div class="layui-input-inline">
+                                <input type="text" name="kewords3" maxlength="25" value="{$Request.get.kewords3}" autocomplete="off" placeholder="输入用户名" class="layui-input" >
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <button class="layui-btn layuiadmin-btn-list"
+                                    lay-filter="LAY-app-contlist-search">
+                                <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+                            </button>
+                            
+                        </div>
+                    </div>
+                </form>
+                <div class="layui-card-body">
+                	<div style="padding-bottom: 10px;">
+                        <ul class="layui-nav" style="width: 110px; padding:0px; float:left; margin-right:10px;">
+                          <li class="layui-nav-item" style="line-height:38px;">
+                            <a href="javascript:;">批量操作</a>
+                            <dl class="layui-nav-child" style="top:39px;">
+                              <dd><a href="javascript:;" onClick="delAll()">批量删除</a></dd>
+                            </dl>
+                          </li>
+                        </ul>
+                        
+                    </div>
+                    <table class="layui-table">
+                        <thead>
+                        <tr>
+                            <th width="25"><div class="layui-unselect header layui-form-checkbox" lay-skin="primary"><i class="layui-icon">&#xe605;</i></div></th>
+                            <th>内容</th>
+                            <th width="100">用户</th>
+                            <th width="150">时间</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {volist name='data' id='vo'}
+                        <tr>
+                            <td><div class="layui-unselect layui-form-checkbox" lay-skin="primary" data-id='{$vo.id}'><i class="layui-icon">&#xe605;</i></div></td>
+                            <td>{$vo.content}</td>
+                            <td align="center">{$vo.usera.username}</td>
+                            <td align="center">{$vo.addtime}</td>
+                            </td>
+                        </tr>
+                        {/volist}
+                        </tbody>
+                    </table>
+                    {$data->render()}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var layer;
+	layui.use(['form', 'layer','upload','laydate'], function () {
+                    var form = layui.form;
+                    layer = layui.layer;
+					laydate = layui.laydate;
+		  laydate.render({
+			elem: '#bdata',
+
+		  });
+		  laydate.render({
+			elem: '#edata',
+		  });
+		  laydate.render({
+			elem: '#date1',
+			type:'datetime'
+		  });
+		  
+    
+      });
+</script>
+<script>
+   
+	function editAll (argument) {
+
+        var data = tableCheck.getData();
+        layer.confirm('确认删除吗？',function(index){
+            //捉到所有被选中的，发异步进行删除
+            $.get("{:url('bbs/editAll')}",{data:data});//再加一个参数 形成editall(1)更新成某个
+            layer.msg('操作成功', {icon: 1});
+            window.location.reload();
+        });
+      }
+
+
+      function delAll (argument) {
+
+        var data = tableCheck.getData();
+        layer.confirm('确认要删除吗？',function(index){
+            //捉到所有被选中的，发异步进行删除
+            $.get("{:url('bbs/delAll')}",{data:data});
+            layer.msg('删除成功', {icon: 1});
+            $(".layui-form-checked").not('.header').parents('tr').remove();
+        });
+      }
+	  
+    function closeDialog() {
+        window.location.reload();
+    }
+
+    function update(pid) {
+        var url = '{:url("bbs/save")}';
+		$("#pid").val(pid);
+    	var data = $('#saveFrm').serialize();
+        //data +='&img_src='+ $('#img').attr('src');
+        //data +='&desc='+ ue.getContent();
+        if ($('[name="id"]').val()) {
+            url = '{:url("bbs/update")}';
+            data.id = $('[name="id"]').val();
+        }
+        $.ajax({
+            url: url,
+            type: 'post',
+            dataType: "json",
+            data: data
+        }).done(function (data) {
+            layer.msg(data.msg);
+            if (data.code === 0) {
+                closeDialog();
+            } else {
+                layer.msg(data.msg);
+            }
+        });
+    }
+
+    function showEditDialog(id) {
+        $.ajax({
+            url: '{:url("bbs/edit")}',
+            type: 'post',
+            dataType: "json",
+            data: {
+                id: id
+            }
+        }).done(function (data) {
+            if (data.code === 1) {
+                $('#id').val(id);
+                var def_arr = ['editorValue'];
+                $.each(data.data, function (key, value) {
+                    $('#' + key).val(value);
+                });
+
+                $('#photoImg').attr('src', '__ROOT__/uploads/' + $('#car_photo').val());
+                $('#video1').attr('src', '__ROOT__/uploads/' + $('#video').val());
+				
+                ///$('#editor').attr('value', $('#video').val());
+			    layui.use(['form', 'layer', 'upload','laydate'], function () {
+                    var form = layui.form;
+                    layer = layui.layer;
+					laydate = layui.laydate;
+					  laydate.render({
+						elem: '#begintime',
+					  });
+					  laydate.render({
+						elem: '#endtime',
+					  });
+					  laydate.render({
+						elem: '#date1',
+						type:'datetime'
+					  });
+					
+				
+
+                    var upload = layui.upload;
+                    var uploadInst = upload.render({
+                        elem: '#photoBtn'
+                        , url: "{:url('index/upload')}"
+                        , before: function (obj) {
+                            //预读本地文件示例，不支持ie8
+                            obj.preview(function (index, file, result) {
+                                $('#photoImg').attr('src', result); //图片链接（base64）
+                            });
+                        }
+                        , done: function (res) {
+                            //如果上传失败
+                            if (res.code > 0) {
+                                return layer.msg('上传失败');
+                            } else {
+                                $('#car_photo').val(res.data);
+                            }
+                            //上传成功
+                        }
+                        , error: function () {
+                            //演示失败状态，并实现重传
+                            var demoText = $('#photoText');
+                            demoText.html('<span style="color: #FF5722;">上传失败</span> <a class="layui-btn layui-btn-xs demo-reload">重试</a>');
+                            demoText.find('.demo-reload').on('click', function () {
+                                uploadInst.upload();
+                            });
+                        }
+                    });
+
+                    var upload1 = layui.upload;
+                    var uploadInst = upload.render({
+                        elem: '#photoBtn1'
+                        , url: "{:url('index/upload')}"
+                        , before: function (obj) {
+                            //预读本地文件示例，不支持ie8
+                            obj.preview(function (index, file, result) {
+                                $('#video1').attr('src', result); //图片链接（base64）
+                            });
+                        }
+                        , done: function (res) {
+                            //如果上传失败
+                            if (res.code > 0) {
+                                return layer.msg('上传失败');
+                            } else {
+                                $('#video').val(res.data);
+                            }
+                            //上传成功
+                        }
+                        , error: function () {
+                            //演示失败状态，并实现重传
+                            var demoText = $('#photoText1');
+                            demoText.html('<span style="color: #FF5722;">上传失败</span> <a class="layui-btn layui-btn-xs demo-reload">重试</a>');
+                            demoText.find('.demo-reload').on('click', function () {
+                                uploadInst.upload();
+                            });
+                        }
+                    });
+
+                    form.render();
+                });
+                layer.open({
+                    type: 1
+                    , title: '编辑内容'
+                    , content: $('#dialog_box')
+                    , area: ['70%', '70%']
+                });
+            }
+        });
+    }
+
+    function showCreateDialog() {
+        var dialog_box = $('div#dialog_box');
+        dialog_box.find('img').attr('src', '__STATIC__/images/nopicture.jpg');
+        dialog_box.find('input').val('');
+        layui.use(['form', 'layer', 'upload', 'laydate'], function () {
+            var form = layui.form;
+            layer = layui.layer;
+            var upload = layui.upload;
+            var uploadInst = upload.render({
+                elem: '#photoBtn'
+                , url: "{:url('index/upload')}"
+                , before: function (obj) {
+                    //预读本地文件示例，不支持ie8
+                    obj.preview(function (index, file, result) {
+                        $('#photoImg').attr('src', result); //图片链接（base64）
+                    });
+                }
+                , done: function (res) {
+                    //如果上传失败
+                    if (res.code > 0) {
+                        return layer.msg('上传失败');
+                    } else {
+                        $('#car_photo').val(res.data);
+                    }
+                    //上传成功
+                }
+                , error: function () {
+                    //演示失败状态，并实现重传
+                    var demoText = $('#photoText');
+                    demoText.html('<span style="color: #FF5722;">上传失败</span> <a class="layui-btn layui-btn-xs demo-reload">重试</a>');
+                    demoText.find('.demo-reload').on('click', function () {
+                        uploadInst.upload();
+                    });
+                }
+            });
+            var upload1 = layui.upload;
+            var uploadInst = upload1.render({
+                elem: '#photoBtn1'
+                , url: "{:url('index/upload')}"
+                , accept: 'video'
+                , before: function (obj) {
+                    //预读本地文件示例，不支持ie8
+                    obj.preview(function (index, file, result) {
+                        //$('#video').attr('src', result); //图片链接（base64）
+                    });
+                }
+                , done: function (res) {
+                    //如果上传失败
+                    if (res.code > 0) {
+                        return layer.msg('上传失败');
+                    } else {
+                        $('#video1').attr('src', '__ROOT__/uploads/' + res.data);
+                        $('#video').val(res.data);
+                    }
+                    //上传成功
+                }
+                , error: function () {
+                    //演示失败状态，并实现重传
+                    var demoText = $('#photoText1');
+                    demoText.html('<span style="color: #FF5722;">上传失败</span> <a class="layui-btn layui-btn-xs demo-reload">重试</a>');
+                    demoText.find('.demo-reload').on('click', function () {
+                        uploadInst.upload();
+                    });
+                }
+            });
+            form.render();
+        });
+        layer.open({
+            type: 1
+            , title: '添加内容'
+            , content: dialog_box
+            , area: ['70%', '70%']
+        });
+    }
+
+    function deletea(id) {
+        layer.confirm('确定删除吗？', function (index) {
+            $.ajax({
+                url: '{:url(\'bbs/delete\')}',
+                type: 'post',
+                dataType: "json",
+                data: {
+                    id: id
+                }
+            }).done(function (data) {
+                if (data.code !== 0) {
+                    layer.msg(data.msg);
+                } else {
+                    window.location.reload();
+                }
+            });
+        });
+    }
+</script>
+</body>
+</html>

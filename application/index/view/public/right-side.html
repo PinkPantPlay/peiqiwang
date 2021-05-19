@@ -1,0 +1,30 @@
+<div class="right">
+    <div>
+        <h6>商品分类</h6>
+        <div class="border-bottom" style="margin: 5px;"></div>
+        <div class="row justify-content-around">
+            {volist name='category' id="vo"}
+            <div class="cate-btn col-3 border text-center m-1" onclick="location.href='{:url(\'goods/index\',array(\'categoryid\'=>$vo[\'id\'],\'pid\'=>$vo[\'pid\'],))}'">
+                {$vo.title}
+            </div>
+            {/volist}
+        </div>
+    </div>
+    <div class="pop">
+        <h6 style="margin-top: 10px;">大家都在看</h6>
+        <div class="border-bottom" style="margin: 5px;"></div>
+        {volist name='shujuleft1' id="vo"}
+        <div class="pop-item m-auto">
+            <a href="{:url('goods/goodsdetail',array('id'=>$vo['id'],'categoryid'=>$vo['categoryid'],'pid'=>$vo['pid']))}">
+                <img src="__ROOT__/uploads/{$vo.img}" class="m-auto" />
+            </a>
+            <p class="jge d-flex justify-content-between">
+                <span><font>￥{$vo.sprice}</font></span>
+                <font class="yjia"><font><del>￥{$vo.mprice}</del></font></font>
+            </p>
+            <a href="{:url('goods/goodsdetail',array('id'=>$vo['id'],'categoryid'=>$vo['categoryid'],'pid'=>$vo['pid']))}" class="cp_title">{$vo.title|strip_tags|mb_substr=0,15,'utf-8'}</a>
+        </div>
+        <div style="margin-bottom: 10px;"></div>
+        {/volist}
+    </div>
+</div>

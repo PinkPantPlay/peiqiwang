@@ -1,0 +1,16 @@
+<div class="ui-north">
+        <div class="logo"><img src="__STATIC__/admin/images/index.png"></div>
+        <div class="user_base"><span class="am-icon-angle-down"></span>
+            <ul>
+                {if condition="$auth === 2"}<li><a href="{:url('instructor/read')}">基本资料</a></li>{/if}
+                {if condition="$auth === 3"}<li><a href="{:url('user/edit_self')}">基本资料</a></li>{/if}
+                <li><a href="{:url('login/modify_password')}">密码修改</a></li>
+                <li><a href="{:url('Login/quit')}" target="_parent">退出登录</a></li>
+            </ul>
+        </div>
+        <div class="other_link">
+            <ul>
+                <li><a href="../../"  target="_blank">网站首页</a></li><li>{if condition="$auth === 2"}<a href="{:url('../../index/login/login_out')}" target="_parent">注销退出</a>{elseif condition="$auth === 3"}<a href="{:url('../../index/login/login_out')}" target="_parent">注销退出</a>{else}<a href="{:url('login/login_out')}" target="_top">注销退出</a>{/if}</li>
+            </ul>
+        </div>
+    </div>

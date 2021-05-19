@@ -1,0 +1,102 @@
+{include file="public/header"}
+<div class="banner">
+    <div id="carouselExampleCaptions" class="carousel slide" data-ride="carousel">
+        <ol class="carousel-indicators">
+            {volist name='banner' id="vo"}
+            <li data-target="#carouselExampleCaptions" data-slide-to="{$a++}"></li>
+            {/volist}
+        </ol>
+        <div class="carousel-inner">
+            {volist name='banner' id="vo"}
+                <div class="carousel-item">
+                    <a href="{:url('goods/goodsdetail',array('id'=>$vo['sid']))}">
+                    <img src="__ROOT__/uploads/{$vo.path}" class="d-block w-100" alt="{$vo.title}">
+                    <div class="carousel-caption d-none d-md-block">
+                        <h5>{$vo.title}</h5>
+    <!--                    <p>Some representative placeholder content for the second slide.</p>-->
+                    </div>
+                    </a>
+                </div>
+            {/volist}
+        </div>
+        <a class="carousel-control-prev" href="#carouselExampleCaptions" role="button" data-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="sr-only">Previous</span>
+        </a>
+        <a class="carousel-control-next" href="#carouselExampleCaptions" role="button" data-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="sr-only">Next</span>
+        </a>
+    </div>
+</div>
+<div class="container">
+    <div class="index-item">
+        <div class="d-flex justify-content-between title1">
+            <h4>推荐商品</h4>
+            <button type="button" class="btn btn-outline-primary btn-sm rounded-pill" onclick="location.href='{:url(\'goods\/recommend\')}'">查看更多</button>
+        </div>
+        <div class="row justify-content-start">
+            {volist name='recomm' id="vo"}
+            <div class="col-md-2 col-sm-2 col-4 shadow-lg mb-5 bg-white rounded goods-item" onclick="location.href='{:url(\'goods/goodsdetail\',array(\'id\'=>$vo[\'id\'],\'categoryid\'=>$vo[\'categoryid\'],\'pid\'=>$vo[\'pid\']))}'">
+                <div class="goods-img">
+                    <img src="__ROOT__/uploads/{$vo.img}" alt="">
+                </div>
+                <div style="padding: 10px">
+                    <div style="height: 40px">
+                        <h6 style="font-size: 12px;line-height: 20px;">{$vo.title}</h6>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span style="color: red">￥{$vo.sprice}</span>
+                        <a href="{:url('goods/goodsdetail',array('id'=>$vo['id'],'categoryid'=>$vo['categoryid'],'pid'=>$vo['pid']))}"><div class="detail-btn">查看详情</div></a>
+                    </div>
+                </div>
+            </div>
+            {/volist}
+        </div>
+    </div>
+    <div class="index-item">
+        <div class="d-flex justify-content-between title1">
+            <h4>新品上新</h4>
+            <button type="button" class="btn btn-outline-primary btn-sm rounded-pill" onclick="location.href='{:url(\'goods\/index\')}'">查看更多</button>
+        </div>
+        <div class="row">
+            {volist name='news' id="vo"}
+            <div class="col-md-2 col-sm-2 col-4 shadow-lg mb-5 bg-white rounded goods-item" onclick="location.href='{:url(\'goods/goodsdetail\',array(\'id\'=>$vo[\'id\'],\'categoryid\'=>$vo[\'categoryid\'],\'pid\'=>$vo[\'pid\']))}'">
+                <div class="goods-img">
+                    <img src="__ROOT__/uploads/{$vo.img}" alt="">
+                </div>
+                <div style="padding: 10px">
+                    <div style="height: 40px">
+                        <h6 style="font-size: 12px;line-height: 20px;">{$vo.title}</h6>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span style="color: red">￥{$vo.sprice}</span>
+                        <a href="{:url('goods/goodsdetail',array('id'=>$vo['id'],'categoryid'=>$vo['categoryid'],'pid'=>$vo['pid']))}"><div class="detail-btn">查看详情</div></a>
+                    </div>
+                </div>
+            </div>
+            {/volist}
+        </div>
+    </div>
+    <div class="index-item">
+        <div class="d-flex justify-content-between title1">
+            <h4>热门文章</h4>
+            <button type="button" class="btn btn-outline-primary btn-sm rounded-pill" onclick="location.href='{:url(\'bbs/index\')}'">查看更多</button>
+        </div>
+        {volist name='hotarticle' id="vo"}
+        <div class="articleitem shadow-lg m-auto">
+            <h6><a href="{:url('bbs/detail',array('id'=>$vo['id']))}">{$vo.title} <img src="__STATIC__/index/img/hot.png" alt=""></a></h6>
+            <div class="art-info">⏲ {$vo.addtime}&nbsp;&nbsp;&nbsp;&nbsp;点击数：{$vo.click}</div>
+            <div>
+            <p style="margin: 5px;"><a class="info" href="{:url('bbs/detail',array('id'=>$vo['id']))}">{$vo.content|strip_tags|mb_substr=0,80,'utf-8'}</a></p>
+          </div>
+        </div>
+        <div style="height: 20px;"></div>
+        {/volist}
+    </div>
+</div>
+<script>
+    $('.carousel-indicators li').first().addClass("active");
+    $('.carousel-item').first().addClass("active");
+</script>
+{include file="public/footer"}

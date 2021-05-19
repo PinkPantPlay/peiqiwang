@@ -1,0 +1,142 @@
+{include file="public/header"}
+<style>
+  /*.form-control-plaintext{outline: none;}*/
+</style>
+<div class="container">
+  <div class="d-flex">
+    <div class="left">
+      {include file="user/nav"}
+      <div>
+        <h5>个人资料</h5>
+        <div class="row">
+          <div class="userimg col-sm-3 col-md-3">
+            <img src="__ROOT__/uploads/{$user.img}" alt="">
+          </div>
+          <div class="userinfo col-10 col-sm-5 col-md-5">
+            <h6>{$user.nickname}</h6>
+            <form action="{:url('user/update')}" method="post" enctype="multipart/form-data">
+              <div class="myinfo">
+                <div class="form-group">
+                  <label for="username">用户名</label>
+                  <input type="text" class="form-control" readonly id="username" value="{$user.username}">
+                  <small id="emailHelp" class="form-text text-muted">不可修改</small>
+                </div>
+                <div class="form-group">
+                  <label for="nickname">昵称</label>
+                  <input type="text" name="nickname" class="form-control" id="nickname" value="{$user.nickname}">
+                </div>
+                <div class="form-group">
+                  <label for="chooseImage">头像</label>
+                  <input type="file" id="chooseImage" name="img">
+                </div>
+                <div>
+                  <img id="cropedBigImg" src="__ROOT__/uploads/{$user.img}" alt="" data-address='' title="头像"/>
+                </div>
+                <div class="form-group">
+                  <label for="sex">性别</label>
+                  <select class="form-control" id="sex" name="sex">
+                    <option value="1">男</option>
+                    <option value="2">女</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="tel">电话</label>
+                  <input type="text" class="form-control" name="tel" id="tel" value="{$user.tel}" maxlength="11">
+                  <small id="telHelp" class="form-text text-muted"></small>
+                </div>
+              </div>
+              <div class="btn-group btn-group-sm" role="group" aria-label="Basic example">
+                <button type="submit" class="btn btn-secondary">编辑</button>
+                <button type="button" class="btn btn-dark" onclick="location.href='{:url(\'user/index\')}'">取消</button>
+              </div>
+            </form>
+          </div>
+          <div class="w1 col-5 col-sm-5 col-md-5"></div>
+          <div class="w col-3 col-sm-3 col-md-3"></div>
+          <div class="userinfo col-10 col-sm-4 col-md-4">
+            <h6>密码修改</h6>
+            <form action="{:url('user/updatepwd')}" method="post">
+              <div class="myinfo">
+                <div class="form-group">
+                  <label for="opassword">原密码</label>
+                  <input type="password" name="opassword" class="form-control" id="opassword">
+                  <small id="opwdHelp" class="form-text text-muted"></small>
+                </div>
+                <div class="form-group">
+                  <label for="password">新密码</label>
+                  <input type="password" name="password" class="form-control" id="password">
+                  <small id="pwdHelp" class="form-text text-muted"></small>
+                </div>
+                <div class="form-group">
+                  <label for="repass">重复密码</label>
+                  <input type="password" class="form-control" name="repass" id="repass">
+                  <small id="repwdHelp" class="form-text text-muted"></small>
+                </div>
+              </div>
+              <div class="btn-group btn-group-sm" role="group" aria-label="Basic example">
+                <button type="submit" class="btn btn-secondary">编辑</button>
+                <button type="button" class="btn btn-dark" onclick="location.href='{:url(\'user/index\')}'">取消</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      {include file="public/right-side"}
+    </div>
+  </div>
+</div>
+<script>
+  $('#chooseImage').on('change',function(){
+    var filePath = $(this).val();         //获取到input的value，里面是文件的路径
+    var fileFormat = filePath.substring(filePath.lastIndexOf(".")).toLowerCase();
+    // 检查是否是图片
+    if( !fileFormat.match(/.png|.jpg|.jpeg/) ) {
+      error_prompt_alert('上传错误,文件格式必须为：png/jpg/jpeg');
+      return;
+    }
+    var src = window.URL.createObjectURL(this.files[0]); //转成可以在本地预览的格式
+    $('#cropedBigImg').attr('src',src);
+  });
+  //手机号
+  $(document).on('blur','input[name="tel"]',function () {
+    var tel = $(this).val();
+    if (tel===''){
+      $('#telHelp').text('请输入手机号');
+    }else {
+      var reg = /^[1][3-8][0-9]{9}$/;
+      if (reg.test(tel)){
+        $('#telHelp').text('');
+      }else {
+        $('#telHelp').text('手机号格式输入有误');
+      }
+    }
+  })
+  $(document).on('blur','#opassword',function () {
+    var opwd = $(this).val();
+    if (opwd===''){
+      $('#opwdHelp').text('请输入原密码');
+    }
+  })
+  $(document).on('blur','#password',function () {
+    var pwd = $(this).val();
+    if (pwd===''){
+      $('#pwdHelp').text('请输入新密码');
+    }
+  })
+  $(document).on('blur','#repass',function () {
+    var repwd = $(this).val();
+    var pwd = $('#password').val();
+    if (repwd===''){
+      $('#repwdHelp').text('请输入新密码');
+    }else {
+      if (repwd===pwd){
+        $('#repwdHelp').text('');
+      }else {
+        $('#repwdHelp').text('两次输入密码不一致');
+      }
+    }
+  })
+</script>
+{include file="public/footer"}

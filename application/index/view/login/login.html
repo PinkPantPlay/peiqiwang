@@ -1,0 +1,141 @@
+{include file="public/header"}
+<link rel="stylesheet" href="__STATIC__/index/css/login.css">
+<div class="shadow p-3 mb-5 bg-white rounded" style="height: 80px;">
+  <div class="container">
+    <p class="text-right"><span style="padding: 4px 5px 0 0;">没有帐号， 点此 </span><button type="button" class="btn btn-light btn-sm" onclick="location.href='{:url(\'login/register\')}'">注册</button></p>
+  </div>
+</div>
+<div class="container">
+  <div class="login-box shadow p-3 mb-5 bg-white rounded m-auto">
+    <ul class="text-center">
+      <li>用户登录</li>
+    </ul>
+    <div class="login-form">
+      <!--<form action="{:url('login/checkl')}" method="post">-->
+      <form>
+        <div class="register_infor">
+          <ul>
+            <li class="input_box">
+              <span class="t_text user_putong_card"></span>
+              <input type="text" name="username" id="username" autocomplete="off" placeholder="用户名">
+              <span class="error_icon"></span>
+            </li>
+            <li class="error_box"><div id="usernameMSG"></div></li>
+            <li class="input_box">
+              <span class="t_text pass_putong_card"></span>
+              <input type="password" name="password" id="password" autocomplete="off" placeholder="密码">
+              <span class="error_icon"></span>
+            </li>
+            <li class="error_box"><div id="passwordMSG"></div></li>
+            <li class="input_box">
+              <span class="t_text pass_putong_card"></span>
+              <input type="text" name="verify" id="verification" autocomplete="off" placeholder="验证码">
+              <span class="error_icon"></span>
+            </li>
+            <li class="error_box"><div id="verificationMSG"></div></li>
+            <li>
+              <img src="{:captcha_src()}" alt="" class="verifyimg reloadverify">
+              <button type="submit" class="btn btn-success" style="margin-left: 20px;" id="post">登录</button>
+            </li>
+          </ul>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<script>
+  $(function(){
+    // 刷新验证码
+    var verifyimg = $(".verifyimg").attr("src");
+    $(".reloadverify").click(function(){
+      if( verifyimg.indexOf('?')>0){
+        $(".verifyimg").attr("src", verifyimg+'&random='+Math.random());
+      }else{
+        $(".verifyimg").attr("src", verifyimg.replace(/\?.*$/,'')+'?'+Math.random());
+      }
+    });
+  })
+  $(document).on('blur','input[name="username"]',function () {
+    var value = $(this).val();
+    if (value===''){
+      $('#username').parent().css('border','1px solid red');
+      $('#usernameMSG').replaceWith('<div id="usernameMSG" style="color: red;">请输入用户名</div>');
+    }else {
+      $('#username').parent().css('border','1px solid green');
+      $('#usernameMSG').replaceWith('<div id="usernameMSG"></div>');
+    }
+  })
+  $(document).on('blur','input[name="password"]',function () {
+    var value = $(this).val();
+    if (value===''){
+      $('#password').parent().css('border','1px solid red');
+      $('#passwordMSG').replaceWith('<div id="passwordMSG" style="color: red;">请输入密码</div>');
+    }else {
+      $('#password').parent().css('border','1px solid green');
+      $('#passwordMSG').replaceWith('<div id="passwordMSG"></div>');
+    }
+  })
+  $(document).on('blur','input[name="verify"]',function () {
+    var code = $(this).val();
+    if (code===''){
+      $('#verification').parent().css('border','1px solid red');
+      $('#verificationMSG').replaceWith('<div id="verificationMSG" style="color: red;">请输入验证码</div>');
+    }else {
+      $('#verification').parent().css('border','1px solid green');
+      $('#verificationMSG').replaceWith('<div id="verificationMSG"></div>');
+    }
+  })
+    $("form").submit(function(){
+    var username = $('input[name="username"]').val();
+    var password = $('input[name="password"]').val();
+    var verify = $('input[name="verify"]').val();
+    if (username == null){
+      alert('请输入用户名');
+      return false;
+    }
+    if (password == null){
+      alert('请输入密码');
+      return false;
+    }
+    if (verify == null){
+      alert('请输入验证码');
+      return false;
+    }
+  })
+  $(document).on('click','#post',function () {
+    var username = $('input[name="username"]').val();
+    var password = $('input[name="password"]').val();
+    var verify = $('input[name="verify"]').val();
+    $.ajax({
+      url: '{:url(\'login/checkl\')}',
+      type: 'POST',
+      data: {
+        'username':username,
+        'password':password,
+        'verify':verify
+      },
+      dataType:'text',
+      success:function (z) {
+          console.log(z);
+        if (z == '1'){
+          showMessage('登录成功',1);
+          setTimeout(function () {
+            location.href="{:url('user/index')}";
+          },1000)
+        }else if (z == '2'){
+          showMessage('验证码输入有误',0);
+        }else if (z == '3'){
+          showMessage('请输入用户名',0);
+        }else if (z == '6'){
+          showMessage('账号已被冻结，请联系管理员',0);
+        }else if (z == '4'){
+          showMessage('请输入密码',0);
+        }else {
+          showMessage('用户名或密码有误',0);
+        }
+      }
+    })
+    return false;
+  })
+</script>
+{include file="public/footer"}

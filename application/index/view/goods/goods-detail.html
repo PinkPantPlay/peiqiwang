@@ -1,0 +1,124 @@
+{include file="public/header"}
+<div class="container">
+  <div class="box d-flex justify-content-around">
+    <div class="left">
+      <div class="tg">
+        <a href="{:url('index/index')}">首页</a> > <a href="{:url('goods/index')}">全部商品</a> > <a href="#" class="inactive">商品详情</a>
+      </div>
+      <div class="goods-detail">
+        <div>
+          <div class="row">
+            <div class="detail-img">
+              <img src="__ROOT__/uploads/{$pro.img}" alt="{$pro.title}" class="m-auto">
+            </div>
+            <form action="{:url('cart/save')}" method="post">
+            <div class="detail-box">
+              <h6>{$pro.title}</h6>
+              <div class="p-box">
+                <p>{$pro.mark1}</p>
+                <h6 style="color: red;">会员价: ￥{$pro.sprice}&nbsp;&nbsp;&nbsp;&nbsp;<span style="font-size: 10px;color: #000000;">市场价: <del>￥{$pro.mprice}</del></span></h6>
+                <p>库存数量: {$pro.nums=='0'?'已售罄,正在补货中':$pro.nums}</p>
+                <input type="hidden" name="pronums" id="pronums" value="{$pro.nums}" />
+                <div class="btn-group btn-group-sm" role="group" aria-label="Basic example">
+                  <button type="button" class="btn btn-secondary" id="cut">-</button>
+                  <input type="hidden" name="shujuid" value="{$pro.id}">
+                  <input type="hidden" name="price" value="{$pro.sprice}">
+                  <input type="text" name="nums" id="nums" value="1" readonly class="form-control-sm bg-light border-left-0 border-right-0 detail-nums" aria-label="Small" aria-describedby="inputGroup-sizing-sm" />
+                  <button type="button" class="btn btn-secondary" id="add">+</button>
+                  <button type="submit" class="btn btn-outline-secondary" id="addtocart">加入购物车</button>
+                </div>
+              </div>
+            </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="border-bottom" style="margin: 20px 10px;"></div>
+      <div class="content-box">
+        {$pro.editorValue}
+      </div>
+    </div>
+    {include file="public/right-side"}
+  </div>
+</div>
+<script>
+  $(document).on('click','#cut',function () {
+    var nums = $('input[name="nums"]').val();
+    if (nums==='1'){
+      console.log(1);
+    }else {
+      nums = parseInt(nums)-1;
+    }
+    $('#nums').val(nums);
+  })
+  $(document).on('click','#add',function () {
+    var nums = $('input[name="nums"]').val();
+    var pid=$('input[name="shujuid"]').val();
+    $.ajax({
+      type:'GET',
+      url:'{:url(\'goods/getnums\')}',
+      data:'pid='+pid,
+      dataType:'text',
+      success:function (z) {
+        // console.log(z);
+        if (nums>=parseInt(z)){
+          alert('所选商品数量大于库存数量！');
+        }else {
+          // console.log(1);
+          var num=parseInt(nums)+1;
+          if(num===0){ return;}
+          $('#nums').val(num);
+        }
+      }
+    })
+  })
+  $(document).ready(function () {
+      var num = $('#pronums').val();
+      if (num=='0'){
+          $('#addtocart').attr('disabled',"true");
+      }
+  });
+    $(document).on('click','#addtocart',function () {
+        var n = $('input[name="nums"]').val();
+        var sid = $('input[name="shujuid"]').val();
+        var price = $('input[name="price"]').val();
+        if (n>0){
+          $.ajax({
+            type:'POST',
+            url:'{:url(\'Cart/save\')}',
+            data:{
+              'shujuid':sid,
+              'nums':n,
+              'price':price,
+            },
+            dataType:'text',
+            success:function (z) {
+              // console.log(z);
+              var obj = JSON.parse(z);
+              if (obj.msg =='请登录！' ){
+                showMessage('请先登录',0);
+                setTimeout(function () {
+                  location.href="{:url('login/login')}";
+                },1000);
+                return false;
+              }
+              if (obj.code=='1'){
+                showMessage(obj.msg,1);
+                // return false;
+                setTimeout(function () {
+                  location.href="{:url('cart/index')}";
+                },1000);
+                return false;
+              }else {
+                showMessage(obj.msg,0);
+                return false;
+              }
+            }
+          })
+        }else {
+          alert('商品数量不能小于1');
+        }
+        return false;
+      })
+</script>
+{include file="public/footer"}

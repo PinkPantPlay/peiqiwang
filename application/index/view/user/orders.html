@@ -1,0 +1,62 @@
+{include file="public/header"}
+<style>
+  th,td{text-align: center;}
+</style>
+<div class="container">
+    <div>
+      {include file="user/nav"}
+      <div>
+        <h5>我的订单</h5>
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+            <tr>
+              <th scope="col">订单号</th>
+              <th scope="col">日期</th>
+              <th scope="col">状态</th>
+              <th scope="col">总价</th>
+              <th scope="col">订单备注</th>
+              <th scope="col">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            {volist name='orders' id="vo"}
+            <tr name="o{$vo.id}">
+              <td>{$vo.onumber}</td>
+              <td>{$vo.addtime}</td>
+              <td>{$vo.zhuangtai}</td>
+              <td>{$vo.total}</td>
+              <td>{$vo.content}</td>
+              <td><a href="{:url('user/ordersdetail',array('id'=>$vo.id))}">详细</a> <a href="javascript:;" onclick="ordersdel('{$vo.id}')">删除</a></td>
+            </tr>
+            {/volist}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+</div>
+<script>
+    function ordersdel(id){
+        var del = confirm('确定要删除本条订单信息吗？');
+        var tr = ".table tr[name='o"+id+"']";
+        if(del == true){
+            $.ajax({
+                url:'{:url(\'user/ordersdel\')}',
+                type:'get',
+                data:'id='+id,
+                dataType:'text',
+                success:function(z){
+                    // console.log(z);
+                    if(z=='1'){
+                        showMessage('删除成功',1);
+                        $(tr).remove();
+                    }else{
+                        showMessage('删除失败',0);
+                    }
+                }
+            })
+        }
+    }
+</script>
+{include file="public/footer"}

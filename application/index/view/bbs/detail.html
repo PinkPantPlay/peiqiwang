@@ -1,0 +1,113 @@
+{include file="public/header"}
+<div class="container">
+    <div class="box d-flex justify-content-around">
+        <div class="left">
+            <div class="tg">
+                <a href="{:url('index/index')}">首页</a> > <a href="{:url('bbs/index')}">帖子列表</a> > <a href="#" class="inactive">帖子详情</a>
+            </div>
+            {if condition='$uid eq $nowuid'}
+            <button type="button" class="btn btn-danger btn-sm" onclick="delart('{$article.id}')" style="margin-top: 20px;">删除本帖子</button>
+            {/if}
+            <div class="article">
+                <h3 class="text-center" style="margin-top: 20px;">{$article['title']}</h3>
+                <div class="art_info">
+                    <div class="author d-flex">
+                        <img src="__ROOT__/uploads/{$user.img}" alt="" height="50"><p>{$user.nickname}</p>
+                    </div>
+                    <div class="art-info">⏲ {$article.addtime}&nbsp;&nbsp;&nbsp;&nbsp;点击数：{$article.click}</div>
+                </div>
+                <div class="content-box">{$article['content']}</div>
+            </div>
+            <div class="border-bottom" style="margin: 20px 10px;"></div>
+            <div class="reply">
+<!--                <form action="{:url('bbs/reply')}" method="post">-->
+                    <div class="form-group">
+                        <label for="comment">评论:</label>
+                        <textarea class="form-control" name="content" rows="5" id="comment"></textarea>
+                        <input type="hidden" name="id" value="{$article.id}">
+                    </div>
+                    <button type="submit" class="btn btn-outline-primary btn-sm" id="post">发表评论</button>
+<!--                </form>-->
+            </div>
+            <div class="border-bottom" style="margin: 20px 10px;"></div>
+            <div class="replylist">
+                {volist name='reply' id="vo"}
+                <div class="art_info">
+                    <div class="author d-flex">
+                        <img src="__ROOT__/uploads/{$vo.img}" alt="" height="50"><p>{$vo.nickname}</p>
+                    </div>
+                    <div class="art-info">⏲ {$vo.addtime}</div>
+                </div>
+                <div>{$vo.content}</div>
+                <div class="line1"></div>
+                {/volist}
+            </div>
+        </div>
+        {include file="public/right-side"}
+    </div>
+</div>
+<script>
+    $(document).on('click','#post',function () {
+        var contents = $('#comment').val();
+        var id = $('input[name="id"]').val();
+        // console.log(contents);
+        if (contents==''){
+            showMessage('请先输入回复内容',0);
+        }else {
+            $.ajax({
+                url:'{:url(\'bbs/reply\')}',
+                type:'post',
+                data:{
+                    'id':id,
+                    'content':contents
+                },
+                dataType:'text',
+                success:function (z) {
+                    var obj = JSON.parse(z);
+                    if (obj.msg == '请登录！'){
+                        showMessage('请先登录',0);
+                        setTimeout(function () {
+                            location.href="{:url('login/login')}";
+                        },1000);
+                        return false;
+                    }
+                    if (obj.code =='1' ){
+                        showMessage('回复成功',1);
+                        setTimeout(function () {
+                            window.location.reload();
+                        },1000);
+                    }else {
+                        showMessage('回复失败',0);
+                        return false;
+                    }
+                }
+            })
+        }
+        return false;
+    })
+    function delart(id) {
+        var yes = confirm('确定要删除这篇文章吗？');
+        if (true==yes){
+            $.ajax({
+                url:'{:url(\'bbs/delart\')}',
+                type:'GET',
+                data:'id='+id,
+                dataType: 'text',
+                success:function (z) {
+                    var obj = JSON.parse(z);
+                    if (obj.code == '1'){
+                        showMessage(obj.msg,1);
+                        setTimeout(function () {
+                            location.href="{:url('bbs/index')}";
+                        },1000);
+                    }else {
+                        showMessage(obj.msg,0);
+                        return false;
+                    }
+                }
+            })
+        }
+        return false;
+    }
+</script>
+{include file="public/footer"}

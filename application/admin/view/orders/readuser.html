@@ -1,0 +1,74 @@
+{include file="public/header" /}
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-body">
+                    <table class="layui-table">
+                        <thead>
+                        <tr>
+                            <th colspan="5" align="left">订单号：{$orders.onumber}</th>
+                          </tr>
+                        <tr>
+                            <th>商品名称</th>
+                            <th>数量</th>
+                            <th>成交价</th>
+                            <th>金额总计</th>
+							<th>状态</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {volist name='data' id='vo'}
+                        <tr>
+                            <td align="center">{$vo.shuju.title}</td>
+                            <td align="center">{$vo.nums}</td>
+                            <td align="center">{$vo.price}</td>
+                          <td align="center">{$vo.nums*$vo.price}</td>
+                            <td align="center">{$vo.zhuangtai}</td>
+                      </tr>
+                        {/volist}
+                        </tbody>
+                    </table>
+                    <table class="layui-table">
+                        <tbody>
+                        <tr><td align="right" width="200">姓名：</td><td align="left">{$orders.nickname}</td></tr>
+                        <tr><td align="right">电话：</td><td align="left">{$orders.tel}</td></tr>
+                        <tr><td align="right">地址：</td><td align="left">{$orders.address}</td></tr>
+                        <tr><td align="right">支付方式：</td><td align="left">{$orders.zffs}</td></tr>
+                        <tr><td align="right">送货方式：</td><td align="left">{$orders.shfs}</td></tr>
+                        {if condition="$orders.kuaidi neq ''"}
+                        <tr><td align="right">快递信息：</td><td align="left">{$orders.kuaidi}-{$orders.knumber}</td></tr>
+                        {/if}
+                        <tr><td align="right">留言：</td><td align="left">{$orders.content}</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="layui-form-item layui-form-text">
+        <div class="layui-input-block" style="text-align:center">
+          
+           {if condition="($orders.zhuangtai eq '已发货') || ($orders.shfs eq '自提')"} <button class="layui-btn " onclick="window.location.href='{:url('orders/shouhuo',array('id'=>$orders.id))}'">收货</button>{/if}
+            <button class="layui-btn " onclick="closeDialog()">返回</button>
+        </div>
+    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var layer;
+    layui.config({
+        base: '__STATIC__/lib/layuiadmin/' //静态资源所在路径
+    }).extend({
+        index: 'lib/index' //主入口模块
+    }).use(['index', 'layer'], function () {
+        layim = layui.layer;
+    });
+</script>
+<script>
+    function closeDialog() {
+        parent.location.reload();
+    }
+
+</script>
+</body>
+</html>

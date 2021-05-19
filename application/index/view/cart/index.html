@@ -1,0 +1,109 @@
+{include file="public/header"}
+<style>
+  th,td{text-align: center;}
+  td{line-height: 70px;}
+  h4{margin: 30px;}
+</style>
+<div class="container">
+  <h4 class="text-center">购物车</h4>
+  <div class="cart table-responsive">
+    <table class="table">
+      <thead>
+      <tr>
+        <th scope="col">商品</th>
+        <th scope="col">商品图片</th>
+        <th scope="col">单价</th>
+        <th scope="col">数量</th>
+        <th scope="col">小计</th>
+        <th scope="col">操作</th>
+      </tr>
+      </thead>
+      <tbody>
+      {volist name='cart' id="vo"}
+      <tr name="a{$vo.id}">
+        <td>{$vo.title}</td>
+        <td><img src="__ROOT__/uploads/{$vo.img}" alt="{$vo.title}" height="50"></td>
+        <td>￥{$vo.sprice}</td>
+        <td>
+          <div class="btn-group btn-group-sm" role="group" aria-label="Basic example">
+            <button type="button" class="btn btn-secondary" onclick="cut('{$vo.id}');">-</button>
+            <input type="hidden" name="shujuid" value="{$vo.shujuid}">
+            <input type="hidden" name="price" value="{$vo.sprice}">
+            <input type="text" name="nums" value="{$vo.nums}" id="a{$vo.id}" readonly class="form-control-sm bg-light border-left-0 border-right-0 detail-nums" aria-label="Small" aria-describedby="inputGroup-sizing-sm" />
+            <button type="button" class="btn btn-secondary" onclick="add('{$vo.id}')">+</button>
+          </div>
+        </td>
+        <td>
+          <input type="text" value="￥{$vo.sprice*$vo.nums}" readonly class="form-control-plaintext text-center" style="line-height: 70px;outline: none;">
+        </td>
+        <td><a href="#" onclick="del('{$vo.id}')">删除</a></td>
+      </tr>
+      {/volist}
+      </tbody>
+    </table>
+    <div class="text-right">
+      <p class="text-right">总价: <span style="padding: 4px 5px 0 0;color: red;">￥{$total}&nbsp;&nbsp;&nbsp;&nbsp;</span><button type="button" class="btn btn-danger btn-sm" onclick="location.href='{:url(\'cart/submit\')}'">去结算</button></p>
+    </div>
+  </div>
+</div>
+<script>
+  function cut(id) {
+    var nums = $(this).next().val();
+    if (nums==='1'){
+      console.log(1);
+    }else {
+      $.ajax({
+        type: 'GET',
+        url: '{:url(\'cart/cutone\')}',
+        data: {
+          'id':id,
+        },
+        success:function (z) {
+          // console.log(z);
+          if (z === '1'){
+            location.reload();
+          }
+        }
+      })
+    }
+  }
+  function add(id) {
+    $.ajax({
+      type: 'GET',
+      url: '{:url(\'cart/addone\')}',
+      data: {
+        'id':id,
+      },
+      success:function (z) {
+        // console.log(z);
+        if (z ==='1'){
+          location.reload();
+        }else {
+          alert("商品库存不足");
+        }
+      }
+    })
+  }
+  function del(id){
+    var tr = ".table tr[name='a"+id+"']";
+    var del = confirm('确定要将此商品移出购物车吗？');
+    if(del == true){
+        $.ajax({
+          type:'GET',
+          url:'{:url(\'cart/del\')}',
+          data:'id='+id,
+          dataType:'text',
+          success:function (z) {
+            // console.log(z);
+            if (z === '1'){
+              $(tr).remove();
+              alert('删除成功');
+            }else {
+              alert('删除失败');
+            }
+          }
+        })
+    }
+  }
+</script>
+{include file="public/footer"}

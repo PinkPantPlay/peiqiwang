@@ -1,0 +1,299 @@
+{include file="public/header" /}
+<link rel="stylesheet" href="__STATIC__/index/css/login.css">
+<div class="shadow p-3 mb-5 bg-white rounded" style="height: 80px;">
+    <div class="container">
+        <p class="text-right"><span style="padding: 4px 5px 0 0;">已有帐号， 点此 </span><button type="button" class="btn btn-light btn-sm" onclick="location.href='{:url(\'login/login\')}'">登录</button></p>
+    </div>
+</div>
+<div class="container">
+    <div class="login-box shadow p-3 mb-5 bg-white rounded m-auto">
+        <ul class="text-center">
+            <li>用户注册</li>
+        </ul>
+        <div class="login-form">
+<!--            <form action="{:url('login/registersave')}" method="post">-->
+            <form action="#">
+                <div class="register_infor">
+                    <ul>
+                        <li class="input_box">
+                            <span class="t_text user_putong_card"></span>
+                            <input type="text" name="username" id="username" autocomplete="off" placeholder="用户名">
+                            <span class="error_icon"></span>
+                        </li>
+                        <li class="error_box"><div id="usernameMSG"></div></li>
+                        <li class="input_box">
+                            <span class="t_text pass_putong_card"></span>
+                            <input type="password" name="password" id="password" autocomplete="off" placeholder="密码">
+                            <span class="error_icon"></span>
+                        </li>
+                        <li class="error_box"><div id="passwordMSG"></div></li>
+                        <li class="input_box">
+                            <span class="t_text user_putong_card"></span>
+                            <input type="password" name="password1" id="password1" autocomplete="off" placeholder="重复密码">
+                            <span class="error_icon"></span>
+                        </li>
+                        <li class="error_box"><div id="passwordMSG1"></div></li>
+
+                        <li class="input_box">
+                            <span class="t_text user_putong_card"></span>
+                            <input type="text" name="nickname" id="nickname" autocomplete="off" placeholder="昵称" maxlength="25">
+                            <span class="error_icon"></span>
+                        </li>
+                        <li class="error_box"><div id="nicknameMSG"></div></li>
+
+                        <li class="input_box">
+                            <select name="sex">
+                                <option value="1">男</option>
+                                <option value="2">女</option>
+                            </select>
+                            <span class="error_icon"></span>
+                        </li>
+                        <li class="error_box"><em></em></li>
+
+                        <li class="input_box">
+                            <span class="t_text user_putong_card"></span>
+                            <input type="text" name="tel" id="tel" autocomplete="off" placeholder="手机" maxlength="11">
+                            <span class="error_icon"></span>
+                        </li>
+                        <li class="error_box"><div id="telMSG"></div></li>
+
+                        <li class="input_box">
+                            <span class="t_text user_putong_card"></span>
+                            <input type="text" name="address" id="address" autocomplete="off" placeholder="地址" maxlength="150">
+                            <span class="error_icon"></span>
+                        </li>
+                        <li class="error_box"><div id="addressMSG"></div></li>
+                        <li class="input_box">
+                            <span class="t_text pass_putong_card"></span>
+                            <input type="text" name="verification" id="verification" autocomplete="off" placeholder="验证码" maxlength="4">
+                            <span class="error_icon"></span>
+                        </li>
+                        <li class="error_box"><div id="verificationMSG"></div></li>
+                        <li>
+                            <img src="{:captcha_src()}" alt="" class="verifyimg reloadverify">
+                            <button type="submit" class="btn btn-success" style="margin-left: 20px;" id="post">注册</button>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{include file="public/footer" /}
+<script>
+    $(function(){
+        // 刷新验证码
+        var verifyimg = $(".verifyimg").attr("src");
+        $(".reloadverify").click(function(){
+            if( verifyimg.indexOf('?')>0){
+                $(".verifyimg").attr("src", verifyimg+'&random='+Math.random());
+            }else{
+                $(".verifyimg").attr("src", verifyimg.replace(/\?.*$/,'')+'?'+Math.random());
+            }
+        });
+    })
+    //异步验证是否有相同用户名的用户
+    $(document).on('blur','input[name="username"]',function () {
+        var username = $(this).val();
+        var reg = /^[A-Za-z0-9]{4,10}$/;
+        var flag = reg.test(username);
+        if (username===''){
+            $('#username').parent().css('border','1px solid red');
+            $('#usernameMSG').replaceWith('<div id="usernameMSG" style="color: red;">请输入用户名</div>');
+        }else {
+            if (!flag){
+                $('#username').parent().css('border','1px solid red');
+                $('#usernameMSG').replaceWith('<div id="usernameMSG" style="color: red;">只能使用4-10位英文字母和数字作为用户名</div>');
+            }else {
+                $.ajax({
+                    type:'GET',
+                    url:'{:url(\'user/verifyErr\')}',
+                    data:'username='+username,
+                    dataType:'text',
+                    success:function (z) {
+                        // console.log(z);
+                        if (z == 1){
+                            $('#username').parent().css('border','1px solid green');
+                            $('#usernameMSG').replaceWith('<div id="usernameMSG"></div>');
+                        }else {
+                            $('#username').parent().css('border','1px solid red');
+                            $('#usernameMSG').replaceWith('<div id="usernameMSG" style="color: red;">用户名已被注册</div>');
+                        }
+                    }
+                })
+            }
+        }
+    })
+    //验证密码格式
+    $(document).on('blur','input[name="password"]',function () {
+        var password = $(this).val();
+        var reg = /^[A-Za-z0-9]{6,16}$/;
+        var flag = reg.test(password);
+        if (!flag){
+            $('#password').parent().css('border','1px solid red');
+            $('#passwordMSG').replaceWith('<div id="passwordMSG" style="color: red;">密码必须由 6-16位字母、数字组成</div>');
+        }else {
+            $('#passwordMSG').replaceWith('<div id="passwordMSG"></div>');
+            $('#password').parent().css('border','1px solid green');
+        }
+    })
+    //验证重复密码是否匹配
+    $(document).on('blur','input[name="password1"]',function () {
+        var password = $('#password').val();
+        var password1 = $(this).val();
+        if (password===password1){
+            $('#password1').parent().css('border','1px solid green');
+            $('#passwordMSG1').replaceWith('<div id="passwordMSG1"></div>');
+        }else if (password1===''){
+            $('#password1').parent().css('border','1px solid red');
+            $('#passwordMSG1').replaceWith('<div id="passwordMSG1" style="color: red;">请再次输入密码</div>');
+        }else {
+            $('#password1').parent().css('border','1px solid red');
+            $('#passwordMSG1').replaceWith('<div id="passwordMSG1" style="color: red;">两次输入密码不一致</div>');
+        }
+    })
+    //验证姓名非空
+    $(document).on('blur','input[name="nickname"]',function () {
+        var nickname = $(this).val();
+        if (nickname===''){
+            $('#nickname').parent().css('border','1px solid red');
+            $('#nicknameMSG').replaceWith('<div id="nicknameMSG" style="color: red;">请输入姓名</div>');
+        }else {
+            $('#nickname').parent().css('border','1px solid green');
+            $('#nicknameMSG').replaceWith('<div id="nicknameMSG"></div>');
+        }
+    })
+    //地址
+    $(document).on('blur','input[name="address"]',function () {
+        var address = $(this).val();
+        if (address===''){
+            $('#address').parent().css('border','1px solid red');
+            $('#addressMSG').replaceWith('<div id="addressMSG" style="color: red;">请输入地址</div>');
+        }else {
+            $('#address').parent().css('border','1px solid green');
+            $('#addressMSG').replaceWith('<div id="addressMSG"></div>');
+        }
+    })
+    //手机号
+    $(document).on('blur','input[name="tel"]',function () {
+        var tel = $(this).val();
+        if (tel===''){
+            $('#tel').parent().css('border','1px solid red');
+            $('#telMSG').replaceWith('<div id="telMSG" style="color: red;">请输入手机号</div>');
+        }else {
+            var reg = /^[1][3-8][0-9]{9}$/;
+            if (reg.test(tel)){
+                $('#tel').parent().css('border','1px solid green');
+                $('#telMSG').replaceWith('<div id="telMSG"></div>');
+            }else {
+                $('#tel').parent().css('border','1px solid red');
+                $('#telMSG').replaceWith('<div id="telMSG" style="color: red;">手机号格式有误</div>');
+            }
+        }
+    })
+    //验证验证码
+    $(document).on('blur','input[name="verification"]',function () {
+        var code = $(this).val();
+        if (code===''){
+            $('#verification').parent().css('border','1px solid red');
+            $('#verificationMSG').replaceWith('<div id="verificationMSG" style="color: red;">请输入验证码</div>');
+        }else {
+            // $.ajax({
+            //     type:'GET',
+            //     url:'{:url(\'user/verifyCodeErr\')}',
+            //     data:'code='+code,
+            //     dataType:'text',
+            //     success:function (z) {
+            //         // console.log(z);
+            //         if (z == 1){
+            //             $('#verification').parent().css('border','1px solid green');
+            //             $('#verificationMSG').replaceWith('<div id="verificationMSG"></div>');
+            //         }else {
+            //             $('#verification').parent().css('border','1px solid red');
+            //             $('#verificationMSG').replaceWith('<div id="verificationMSG">验证码输入有误</div>');
+            //         }
+            //     }
+            // })
+            $('#verification').parent().css('border','1px solid green');
+            $('#verificationMSG').replaceWith('<div id="verificationMSG"></div>');
+        }
+    })
+    //验证输入非空
+    $("form").submit(function(){
+        var username = $('input[name="username"]').val();
+        var password = $('input[name="password"]').val();
+        var verify = $('input[name="verification"]').val();
+        var nickname = $('input[name="nickname"]').val();
+        var password1 = $('input[name="password1"]').val();
+        var tel = $('input[name="tel"]').val();
+        var address = $('input[name="address"]').val();
+        if (username == null){
+            alert('请输入用户名');
+            return false;
+        }
+        if (password == null){
+            alert('请输入密码');
+            return false;
+        }
+        if (verify == null){
+            alert('请输入验证码');
+            return false;
+        }
+        if (nickname == null){
+            alert('请输入用户名');
+            return false;
+        }
+        if (password1 == null){
+            alert('请输入重复密码');
+            return false;
+        }
+        if (tel == null){
+            alert('请输入手机号');
+            return false;
+        }
+        if (address == null){
+            alert('请输入地址');
+            return false;
+        }
+    })
+    $(document).on('click','#post',function () {
+        var username = $('input[name="username"]').val();
+        var password = $('input[name="password"]').val();
+        var verification = $('input[name="verification"]').val();
+        var sex = $('select[name="sex"]').val();
+        var nickname = $('input[name="nickname"]').val();
+        var password1 = $('input[name="password1"]').val();
+        var tel = $('input[name="tel"]').val();
+        var address = $('input[name="address"]').val();
+        $.ajax({
+            url: '{:url(\'login/registersave\')}',
+            type: 'POST',
+            data: {
+                'username':username,
+                'password':password,
+                'sex':sex,
+                'nickname':nickname,
+                'password1':password1,
+                'tel':tel,
+                'address':address,
+                'verification':verification
+            },
+            dataType:'text',
+            success:function (z) {
+                // console.log(z);
+                var obj = $.parseJSON(z);
+                // console.log(obj.msg);
+                if (obj.code == '1'){
+                    showMessage(obj.msg, obj.code);
+                    setTimeout(function () {
+                        location.href="{:url('login/login')}";
+                    },1000)
+                }else {
+                    showMessage(obj.msg, obj.code);
+                }
+                return false;
+            }
+        })
+        return false;
+    })
+</script>

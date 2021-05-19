@@ -1,0 +1,132 @@
+{include file="public/header"}
+<div class="container">
+  <div class="box d-flex justify-content-around">
+    <div class="left">
+      <div class="tg">
+        <a href="{:url('index/index')}">首页</a> > <a href="#" class="inactive">帖子列表</a>
+      </div>
+      <div class="article" style="margin-top: 20px;">
+        <button type="button" class="btn btn-primary btn-sm" onclick="location.href='#addbbs'">发布新帖子</button>
+        <div class="category border-bottom d-flex">
+          <p>帖子分类: </p>
+          <ul class="nav">
+            <li class="nav-item">
+              <a class="nav-link" href="{:url('bbs/index')}">全部帖子</a>
+            </li>
+            {volist name='bbstype' id="vo"}
+            <li class="nav-item">
+              <a class="nav-link" href="{:url('bbs/index',array('categoryid'=>$vo['id']))}">{$vo.title}</a>
+            </li>
+            {/volist}
+          </ul>
+        </div>
+        {volist name='article' id="vo"}
+        <div class="articleitem shadow p-3 mb-5 bg-white rounded m-auto">
+          <h6><a href="{:url('bbs/detail',array('id'=>$vo['id']))}"><span>{$vo.title}</span>{if condition="$vo['click']>99"}&nbsp;&nbsp;&nbsp;&nbsp;<span id="hot"><img src="__STATIC__/index/img/hot.png" alt=""></span>{/if}</a></h6>
+          <div class="art-info">⏲ {$vo.addtime}&nbsp;&nbsp;&nbsp;&nbsp;点击数：{$vo.click}</div>
+          <div>
+            <p style="margin: 5px;"><a class="info" href="{:url('bbs/detail',array('id'=>$vo['id']))}">{$vo.content|strip_tags|mb_substr=0,80,'utf-8'}</a></p>
+          </div>
+        </div>
+        <div style="height: 20px;"></div>
+        {/volist}
+      </div>
+      <div style="margin-bottom: 20px;">
+        {$article->render()}
+      </div>
+      <div class="art_add" id="addbbs">
+        <!--<form action="{:url('bbs/articleadd')}" method="post">-->
+          <label for="">帖子标题</label>
+          <div class="input-group mb-3">
+            <input type="text" name="title" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+          </div>
+          <div class="form-group">
+            <label for="bbstype">帖子分类</label>
+            <select class="form-control" id="bbstype" name="bbstype">
+              {volist name='bbstype' id="vo"}
+              <option value="{$vo.id}">{$vo.title}</option>
+              {/volist}
+            </select>
+          </div>
+          <label for="">内容</label>
+          <div style="margin-bottom: 20px;">
+            <!-- 加载编辑器的容器 -->
+            <script id="container" name="content" type="text/plain">这里写你的帖子内容</script>
+            <!-- 配置文件 -->
+            <script type="text/javascript" src="__ROOT__/static/ueditor/ueditor.config.js"></script>
+            <!-- 编辑器源码文件 -->
+            <script type="text/javascript" src="__ROOT__/static/ueditor/ueditor.all.js"></script>
+            <!-- 实例化编辑器 -->
+            <script type="text/javascript">
+              var ue = UE.getEditor('container');
+              //获取html内容，返回: <p>hello</p>
+              var html = ue.getContent();
+              //获取纯文本内容，返回: hello
+              var txt = ue.getContentTxt();
+            </script>
+          </div>
+          <button type="submit" class="btn btn-outline-primary btn-sm" id="post" disabled>发布</button>
+          <script>
+            $(document).on('blur','input[name="title"]',function () {
+              var title = $(this).val();
+              if (title==''){
+                alert('请输入标题');
+                $('#post').attr('disabled','disabled');
+              }else {
+                $('#post').removeAttr("disabled");
+              }
+            })
+          </script>
+        <!--</form>-->
+      </div>
+    </div>
+    {include file="public/right-side"}
+  </div>
+</div>
+<script>
+  $(document).on('click','#post',function () {
+    var title = $('input[name="title"]').val();
+    var bbstype = $('#bbstype').val();
+    var ue = UE.getEditor('container');
+    var content = ue.getContent();
+    if (title==''){
+      showMessage('请输入标题',0);
+      return false;
+    }
+    if (content=='' || content=='<p>这里写你的帖子内容</p>'){
+      alert('请输入帖子内容');
+      return false;
+    }
+    $.ajax({
+      url:'{:url(\'bbs/articleadd\')}',
+      type:'POST',
+      data:{
+        'title':title,
+        'bbstype':bbstype,
+        'content':content
+      },
+      dataType:'text',
+      success:function (z){
+        console.log(z);
+        var obj = JSON.parse(z);
+        if (obj.msg == '请登录！'){
+          showMessage('请先登录',0);
+          setTimeout(function () {
+            location.href="{:url('login/login')}";
+          },1000);
+          return false;
+        }
+        if (obj.code =='1'){
+          alert('发布成功');
+          setTimeout(function () {
+            window.location.reload();
+          },1000);
+        }else {
+          alert('发布失败，请重试');
+        }
+      }
+    })
+    return false;
+  })
+</script>
+{include file="public/footer"}

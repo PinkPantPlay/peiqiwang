@@ -1,0 +1,105 @@
+{include file="public/header"}
+<link rel="stylesheet" href="__STATIC__/index/css/login.css">
+<div class="container">
+    <div class="login-box shadow p-3 mb-5 bg-white rounded m-auto">
+        <ul class="text-center">
+            <li>添加收货地址</li>
+        </ul>
+        <div class="login-form">
+            <!--<form action="{:url('user/addressadd')}" method="post">-->
+                <div class="register_infor">
+                    <ul>
+                        <li class="input_box">
+                            <span class="t_text nick_putong_card"></span>
+                            <input type="text" name="nickname" id="nickname" autocomplete="off" placeholder="收件人姓名" maxlength="25">
+                            <span class="error_icon"></span>
+                        </li>
+                        <li class="error_box"><div id="nicknameMSG"></div></li>
+                        <li class="input_box">
+                            <span class="t_text pass_putong_card"></span>
+                            <input type="text" name="tel" id="tel" autocomplete="off" placeholder="收件人电话" maxlength="11">
+                            <span class="error_icon"></span>
+                        </li>
+                        <li class="error_box"><div id="telMSG"></div></li>
+                        <li class="input_box">
+                            <span class="t_text pass_putong_card"></span>
+                            <input type="text" name="address" id="address" autocomplete="off" placeholder="地址" maxlength="100">
+                            <span class="error_icon"></span>
+                        </li>
+                        <li class="error_box"><div id="addressMSG"></div></li>
+                        <li>
+                            <button type="submit" class="btn btn-success" id="post">添加</button>
+                        </li>
+                    </ul>
+                </div>
+            <!--</form>-->
+        </div>
+    </div>
+</div>
+<script>
+    $(document).on('blur','input[name="nickname"]',function () {
+        var value = $(this).val();
+        if (value===''){
+            $('#nickname').parent().css('border','1px solid red');
+            $('#nicknameMSG').replaceWith('<div id="nicknameMSG" style="color: red;">请输入收件人姓名</div>');
+        }else {
+            $('#nickname').parent().css('border','1px solid green');
+            $('#nicknameMSG').replaceWith('<div id="nicknameMSG"></div>');
+        }
+    })
+    //手机号
+    $(document).on('blur','input[name="tel"]',function () {
+        var tel = $(this).val();
+        if (tel===''){
+            $('#tel').parent().css('border','1px solid red');
+            $('#telMSG').replaceWith('<div id="telMSG" style="color: red;">请输入手机号</div>');
+        }else {
+            var reg = /^[1][3-8][0-9]{9}$/;
+            if (reg.test(tel)){
+                $('#tel').parent().css('border','1px solid green');
+                $('#telMSG').replaceWith('<div id="telMSG"></div>');
+            }else {
+                $('#tel').parent().css('border','1px solid red');
+                $('#telMSG').replaceWith('<div id="telMSG" style="color: red;">手机号格式有误</div>');
+            }
+        }
+    })
+    $(document).on('blur','input[name="address"]',function () {
+        var code = $(this).val();
+        if (code===''){
+            $('#address').parent().css('border','1px solid red');
+            $('#addressMSG').replaceWith('<div id="addressMSG" style="color: red;">请输入地址</div>');
+        }else {
+            $('#address').parent().css('border','1px solid green');
+            $('#addressMSG').replaceWith('<div id="addressMSG"></div>');
+        }
+    })
+    $(document).on('click','#post',function () {
+        var nickname = $('input[name="nickname"]').val();
+        var tel = $('input[name="tel"]').val();
+        var address = $('input[name="address"]').val();
+        $.ajax({
+            url: '{:url(\'user/addressadd\')}',
+            type: 'POST',
+            data: {
+                'nickname':nickname,
+                'tel':tel,
+                'address':address
+            },
+            success:function (z) {
+                // console.log(z);
+                // var obj = $.parseJSON(z);
+                // console.log(obj.msg);
+                if (z === '1'){
+                    showMessage('添加成功',1);
+                    setTimeout(function () {
+                        window.history.go(-1);
+                    },1000)
+                }else {
+                    showMessage('添加失败，请重试',0);
+                }
+            }
+        })
+    })
+</script>
+{include file="public/footer"}

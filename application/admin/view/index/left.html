@@ -1,0 +1,50 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>无标题文档</title>
+<link href="__STATIC__/admin/css/style.css" rel="stylesheet" type="text/css" />
+<script language="JavaScript" src="__STATIC__/admin/js/jquery.js"></script>
+
+<script type="text/javascript">
+$(function(){	
+	//导航切换
+	$(".menuson li").click(function(){
+		$(".menuson li.active").removeClass("active")
+		$(this).addClass("active");
+	});
+	
+	$('.title').click(function(){
+		var $ul = $(this).next('ul');
+		$('dd').find('ul').slideUp();
+		if($ul.is(':visible')){
+			$(this).next('ul').slideUp();
+		}else{
+			$(this).next('ul').slideDown();
+		}
+	});
+})	
+</script>
+
+
+</head>
+
+<body style="background:#f0f9fd;">
+	<div class="lefttop"><span></span>后台管理</div>
+        
+	<dl class="leftmenu">
+        {volist name="menures" id="cate"}
+        <dd>
+			<div class="title"><span></span>{$cate.title}</div>
+            {if condition="$cate['children'] neq 0"}
+			<ul class="menuson">
+				<?php foreach ($cate['children'] as $k2 => $v2):?>
+                <li><cite></cite><a href="__ROOT__/index.php/admin/<?php echo $v2['url'];?>" target="main"><?php echo $v2['title'];?></a><i></i></li>
+                <?php endforeach;?>
+			</ul>
+            {/if}
+		</dd>
+        {/volist}
+	</dl>
+</body>
+</html>
